@@ -20,6 +20,7 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new UserBundle\UserBundle(),
             new ReportBundle\ReportBundle(),
+            new WhiteOctober\TCPDFBundle\WhiteOctoberTCPDFBundle()
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {

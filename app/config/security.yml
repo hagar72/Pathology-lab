@@ -37,5 +37,7 @@ security:
         - { path: ^/users/, role: ROLE_ADMIN }
         - { path: ^/reports/my-reports, role: ROLE_PATIENT }
         - { path: ^/reports/show-my-report, role: ROLE_PATIENT }
+        - { path: ^/reports/pdf, role: ROLE_PATIENT }
+        - { path: ^/reports/send, role: ROLE_PATIENT }
         - { path: ^/reports/, role: ROLE_ADMIN }
     

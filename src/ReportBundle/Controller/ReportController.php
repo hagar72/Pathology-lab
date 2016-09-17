@@ -10,7 +10,7 @@ use ReportBundle\Entity\Report;
 use ReportBundle\Form\ReportType;
 use ReportBundle\Entity\ReportParameter;
 use Doctrine\Common\Collections\ArrayCollection;
-
+use Swift_Attachment;
 /**
  * Report controller.
  *
@@ -64,7 +64,73 @@ class ReportController extends Controller
             'report' => $report,
         ));
     }
+    
+    /**
+     * Creates a new Report entity.
+     *
+     * @Route("/pdf/{id}", name="get_pdf")
+     * @Method({"GET"})
+     */
+    public function getPdf(Report $report)
+    {   
+        $html = $this->renderView('report/print.html.twig', array('report' => $report));
+        $this->returnPDFResponseFromHTML($html, $report);
+    }
 
+    private function returnPDFResponseFromHTML($html, $report, $response = 'I'){
+        
+        //set_time_limit(30); uncomment this line according to your needs
+        // If you are not in a controller, retrieve of some way the service container and then retrieve it
+        //$pdf = $this->container->get("white_october.tcpdf")->create('vertical', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        //if you are in a controlller use :
+        $pdf = $this->get("white_october.tcpdf")->create('vertical', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->SetAuthor($report->getUser()->getUsername());
+        $pdf->SetTitle($report->getName());
+        $pdf->SetSubject($report->getName());
+        $pdf->setFontSubsetting(true);
+        $pdf->SetFont('helvetica', '', 11, '', true);
+        $pdf->AddPage();
+        
+        $filename = $report->getId() . '-' . $report->getUser()->getUsername () . '-' . $report->getName();
+        
+        $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $html, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
+        if('F' == $response) {
+            $pdf->Output($this->get('kernel')->getRootDir() . '/../web/pdfs/' . $filename.".pdf", $response); // This will output the PDF as a file
+            return $filename;
+        } else {
+            $pdf->Output($filename.".pdf", $response); // This will output the PDF as a response directly
+        }
+    }
+    
+    
+    /**
+     * Creates a new Report entity.
+     *
+     * @Route("/send/{id}", name="send_pdf")
+     * @Method({"GET"})
+     */
+    public function sendPdf(Report $report)
+    {   
+        $html = $this->renderView('report/print.html.twig', array('report' => $report));
+        $filename = $this->returnPDFResponseFromHTML($html, $report, /* response type */ 'F');
+        
+        $message = \Swift_Message::newInstance()
+            ->setSubject($report->getName())
+            ->setFrom(array($this->container->getParameter('mailer_user') => 'Patient report'))
+            ->setTo($report->getUser()->getEmail())
+            ->setBody(
+                    'Hello ' . $report->getUser()->getUsername() . ', '.
+                    "\n\nKindly find attached report: \"\n" . $report->getName() . '"'
+            )
+            ->attach(Swift_Attachment::fromPath($this->get('kernel')->getRootDir() . '/../web/pdfs/' . $filename.".pdf"))
+        ;
+
+        $this->get('mailer')->send($message);
+        
+        $this->addFlash('success', 'Report has been sent to ' . $report->getUser()->getEmail());
+        return $this->redirectToRoute('patient_reports');
+    }
+    
     /**
      * Creates a new Report entity.
      *
