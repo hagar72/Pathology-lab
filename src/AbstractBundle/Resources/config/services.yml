@@ -1,0 +1,4 @@
+services:
+#    abstract.example:
+#        class: AbstractBundle\Example
+#        arguments: ["@service_id", "plain_value", %parameter%]

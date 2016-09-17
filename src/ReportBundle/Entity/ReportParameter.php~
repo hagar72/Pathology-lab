@@ -1,0 +1,49 @@
+<?php
+
+namespace ReportBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * ReportParameter
+ *
+ * @ORM\Table(name="report_parameters", indexes={@ORM\Index(name="fk_report_id", columns={"report_id"})})
+ * @ORM\Entity
+ */
+class ReportParameter
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="parameter", type="string", length=200, nullable=false)
+     */
+    private $parameter;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="value", type="string", length=20, nullable=false)
+     */
+    private $value;
+
+    /**
+     * @var \ReportBundle\Entity\Report
+     *
+     * @ORM\ManyToOne(targetEntity="ReportBundle\Entity\Report")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="report_id", referencedColumnName="id")
+     * })
+     */
+    private $report;
+
+
+}

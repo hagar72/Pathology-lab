@@ -1,0 +1,28 @@
+{% extends "UserBundle::layout.html.twig" %}
+
+{% block fos_user_content %}
+
+    {% trans_default_domain 'FOSUserBundle' %}
+    <div class="container">
+        <div id="form" class="registeration">
+            <form id="contact" action="{{ path('fos_user_registration_register') }}" {{ form_enctype(form) }} method="POST" class="clearfix fos_user_registration_register">
+                <div class="col-md-6 col-lg-12 form-group">
+                    {{ form_widget(form.email, { 'attr': {'placeholder': 'Email'|trans, 'class': 'form-control'} }) }}
+                </div>
+                <div class="col-md-6 col-lg-12 form-group">
+                    {{ form_widget(form.username, { 'attr': {'placeholder': 'Username'|trans, 'class': 'form-control'} }) }}
+                </div>
+                {% for passwordField in form.plainPassword %}
+                    <div class="col-md-6 col-lg-12 form-group">
+                        {{ form_widget(passwordField, { 'attr': {'placeholder': 'Password'|trans, 'class': 'form-control'} }) }}
+                    </div>
+                {% endfor %}
+
+                <div class="col-md-12">
+                    <button id="submit" type="submit" class="col-md-12 col-sm-12 col-xs-12 blue-btn">{{ 'layout.Add Reporter'|trans }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock fos_user_content %}

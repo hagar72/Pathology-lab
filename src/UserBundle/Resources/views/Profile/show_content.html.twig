@@ -1,0 +1,19 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block fos_user_content %}
+    
+<div class="container">
+    <div id="form" class="registeration">
+        <div class="col-md-6 col-lg-12 form-group">
+            <p><b>{{ 'profile.show.username'|trans }}</b>: {{ user.username }}</p>
+
+        </div>
+        <div class="col-md-6 col-lg-12 form-group">
+            <p><b>{{ 'profile.show.email'|trans }}</b>: {{ user.email }}</p>
+        </div>
+        <div class="col-md-6 col-lg-12 form-group">
+            <p><a href="{{ path('fos_user_change_password') }}">{{ 'Change Password'|trans }}</a></p>
+        </div>
+    </div>
+</div>
+{% endblock fos_user_content %}

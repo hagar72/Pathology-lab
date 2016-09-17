@@ -1,0 +1,26 @@
+{% extends "UserBundle::layout.html.twig" %}
+
+{% block fos_user_content %}
+    
+{% trans_default_domain 'FOSUserBundle' %}
+
+<div class="container-fluid">
+    <div class="row">
+        <form action="{{ path('fos_user_resetting_reset', {'token': token}) }}" {{ form_enctype(form) }} method="POST" class="clearfix fos_user_resetting_reset">
+            {{ form_row(form._token) }}
+            {% for passwordField in form.plainPassword %}
+                <div class="form-group">
+                    <div class="error">
+                        {{ form_errors(passwordField) }}
+                    </div>
+                    {{ form_widget(passwordField, { 'attr': {'placeholder': 'Password'|trans, 'class': 'form-control'} }) }}
+                </div>
+            {% endfor %}
+
+            <div class="col-md-12">
+                <input type="submit" value="{{ 'resetting.reset.submit'|trans }}" class="btn btn-lg btn-success btn-block" />
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock fos_user_content %}
