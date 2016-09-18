@@ -120,14 +120,18 @@ class ReportController extends Controller
             ->setTo($report->getUser()->getEmail())
             ->setBody(
                     'Hello ' . $report->getUser()->getUsername() . ', '.
-                    "\n\nKindly find attached report: \"\n" . $report->getName() . '"'
+                    "\n\nKindly find attached report: \"" . $report->getName() . '"'
             )
             ->attach(Swift_Attachment::fromPath($this->get('kernel')->getRootDir() . '/../web/pdfs/' . $filename.".pdf"))
         ;
 
-        $this->get('mailer')->send($message);
+        $sent = $this->get('mailer')->send($message);
         
-        $this->addFlash('success', 'Report has been sent to ' . $report->getUser()->getEmail());
+        if($sent) {
+            $this->addFlash('success', 'Report has been sent to ' . $report->getUser()->getEmail());
+        } else {
+            $this->addFlash('error', 'Report couldn\'t be sent ' . $report->getUser()->getEmail());
+        }
         return $this->redirectToRoute('patient_reports');
     }
     
