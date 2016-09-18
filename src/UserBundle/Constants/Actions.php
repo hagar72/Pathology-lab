@@ -10,7 +10,7 @@ class Actions {
     /**
      * @const Update
      */
-    const Update = 'Update';
+    const Edit = 'edit';
     
     /**
      * @const Delete

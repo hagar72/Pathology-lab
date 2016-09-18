@@ -43,12 +43,23 @@ class UserController extends Controller
     public function newAction(Request $request)
     {
         $user = new User();
-        $form = $this->createForm(new UserType(Actions::Create), $user);
+        $form = $this->createForm( UserType::class, $user);
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $user->setPlainPassword($user->getPassword());
+            $existUsers = $em->getRepository('UserBundle:User')->createQueryBuilder('u')
+                ->where('u.email = :email')
+                ->orWhere('u.username = :username')
+                ->setParameters(array('email'=>$user->getEmail(), 'username' => $user->getUsername()))
+                ->getQuery()->getResult();
+
+            if(count($existUsers) > 0 && $existUsers[0] instanceof User) {
+                $this->addFlash('error', 'User email/username is already exist');
+                return $this->redirectToRoute('users_index');
+            }
+
+//            $user->setPlainPassword($user->getPassword());
             $em->persist($user);
             $em->flush();
 
@@ -86,12 +97,13 @@ class UserController extends Controller
     public function editAction(Request $request, User $user)
     {
         $deleteForm = $this->createDeleteForm($user);
-        $editForm = $this->createForm(new UserType(Actions::Update), $user);
+        $editForm = $this->createForm(UserType::class, $user, array('action' => Actions::Edit));
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $user->setPlainPassword($user->getPassword());
+            
+//            $user->setPlainPassword($user->getPassword());
             $em->persist($user);
             $em->flush();
 

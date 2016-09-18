@@ -6,6 +6,13 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use UserBundle\Constants\Actions;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class UserType extends AbstractType
 {
@@ -14,9 +21,6 @@ class UserType extends AbstractType
      */
     private $action;
     
-    public function __construct($action = Actions::Create) {
-        $this->action = $action;
-    }
     
     /**
      * @param FormBuilderInterface $builder
@@ -24,13 +28,14 @@ class UserType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->action = (Actions::Edit == $options['action'])? Actions::Edit: Actions::Create;
         $builder
-            ->add('email', 'email')
-            ->add('username');
+            ->add('email', EmailType::class)
+            ->add('username', TextType::class);
         
         if(Actions::Create == $this->action) {
-            $builder->add('password', 'repeated', array(
-                'type' => 'password',
+            $builder->add('password', RepeatedType::class, array(
+                'type' => PasswordType::class,
                 'invalid_message' => 'The password fields must match.',
                 'options' => array('attr' => array('class' => 'password-field')),
                 'required' => true,
@@ -38,19 +43,19 @@ class UserType extends AbstractType
                 'second_options' => array('label' => 'Repeat Password'),
             ));
                     
-            $builder->add('role', 'choice', array(
+            $builder->add('role', ChoiceType::class, array(
                 'choices'  => array(
-                    'ROLE_ADMIN' => 'Admin',
-                    'ROLE_PATIENT' => 'Patient',
+                    'Admin' => 'ROLE_ADMIN',
+                    'Patient' => 'ROLE_PATIENT',
                 ),
+                'choices_as_values' => true
             ));
         }
-        $builder->add('enabled', 'checkbox', array(
+        $builder->add('enabled', CheckboxType::class, array(
             'label'    => 'Active?',
-            'required' => false,
             'data' => true,
         ))
-        ->add('submit', 'submit');
+        ->add('submit', SubmitType::class);
         
     }
 
