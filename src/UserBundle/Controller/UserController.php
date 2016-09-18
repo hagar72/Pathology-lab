@@ -59,7 +59,7 @@ class UserController extends Controller
                 return $this->redirectToRoute('users_index');
             }
 
-//            $user->setPlainPassword($user->getPassword());
+            $user->setPlainPassword($user->getPassword());
             $em->persist($user);
             $em->flush();
 
@@ -103,7 +103,7 @@ class UserController extends Controller
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em = $this->getDoctrine()->getManager();
             
-//            $user->setPlainPassword($user->getPassword());
+            $user->setPlainPassword($user->getPassword());
             $em->persist($user);
             $em->flush();
 
